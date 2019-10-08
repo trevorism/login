@@ -35,7 +35,7 @@ class RootController {
     @ApiOperation(value = "Context root of the application")
     @GET
     String displayHelpLink(){
-        '<h1>API</h1><br/>Visit the help page at <a href="/help">/help'
+        '<h1>API</h1><br/>Visit the help page at <a href="/api/help">/api/help'
     }
 
     @ApiOperation(value = "Shows this help page")
