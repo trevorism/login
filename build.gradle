@@ -84,6 +84,12 @@ check {
     dependsOn('jacocoTestReport')
 }
 
+task deliver {
+    dependsOn("build","appengineDeploy", "acceptance")
+    acceptance.mustRunAfter("appengineDeploy")
+    appengineDeploy.mustRunAfter("check")
+}
+
 node {
     version = '12.11.1'
     npmVersion = '6.12.0'
