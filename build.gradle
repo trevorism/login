@@ -98,16 +98,12 @@ node {
     nodeModulesDir = file("${project.projectDir}/src/app")
 }
 
-nodeSetup.onlyIf {
-    !nodeSetup.nodeDir.exists()
+task installApp(type: NpmTask){
+    args = ['install']
 }
-
-npmSetup.onlyIf {
-    !npmSetup.npmDir.exists()
-}
-
 
 task buildApp(type: NpmTask) {
+    dependsOn("installApp")
     args = ['run', 'build']
 }
 
