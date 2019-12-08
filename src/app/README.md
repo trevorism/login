@@ -1,6 +1,6 @@
 # app
 
-> login page
+> login
 
 ## Build Setup
 
