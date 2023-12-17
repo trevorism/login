@@ -24,7 +24,7 @@ buildscript {
 plugins {
     id("groovy")
     id("com.github.johnrengelman.shadow") version "8.1.1"
-    id("io.micronaut.application") version "4.2.0"
+    id("io.micronaut.application") version "4.2.1"
     id("com.github.node-gradle.node") version "7.0.1"
     id("jacoco")
 }
@@ -84,7 +84,7 @@ tasks.withType(GroovyCompile) {
 }
 
 appengine {
-    stage.artifact = "${buildDir}/libs/${project.name}-all.jar"
+    stage.artifact = layout.buildDirectory.file("libs/${project.name}-all.jar")
     deploy {
         projectId = "trevorism-auth"
         stopPreviousVersion = true
@@ -123,7 +123,7 @@ task copyFrontEnd(type: Copy){
     dependsOn("buildApp")
     mustRunAfter(compileGroovy)
     from "src/app/dist"
-    into "${buildDir}/resources/main/public"
+    into layout.buildDirectory.dir("resources/main/public")
 }
 
 
