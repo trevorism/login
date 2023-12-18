@@ -1,21 +1,27 @@
 package com.trevorism.controller
 
+import com.trevorism.http.async.AsyncHttpClient
+import com.trevorism.http.async.AsyncJsonHttpClient
+import io.micronaut.context.event.ApplicationEventListener
 import io.micronaut.http.HttpResponse
 import io.micronaut.http.MediaType
 import io.micronaut.http.annotation.Controller
 import io.micronaut.http.annotation.Get
+import io.micronaut.runtime.server.event.ServerStartupEvent
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.tags.Tag
+import org.apache.hc.core5.concurrent.FutureCallback
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
 @Controller("/api")
-class RootController {
+class RootController implements ApplicationEventListener<ServerStartupEvent> {
 
     private static final Logger log = LoggerFactory.getLogger(RootController)
+    String host
 
     @Tag(name = "Root Operations")
     @Operation(summary = "Context Root of the Application")
@@ -60,4 +66,24 @@ class RootController {
         return "0.0.1"
     }
 
+    @Tag(name = "Root Operations")
+    @Operation(summary = "Warms up the authorization service")
+    @Get(value = "/authWarmup")
+    void warmupAuthService(){
+        AsyncHttpClient client = new AsyncJsonHttpClient()
+        client.get("https://datastore.trevorism.com/ping", {} as FutureCallback)
+        client.get("https://auth.trevorism.com/ping", {} as FutureCallback)
+    }
+
+    @Tag(name = "Root Operations")
+    @Operation(summary = "Gets the current host")
+    @Get(value = "/host")
+    String getCurrentHost(){
+        return host
+    }
+
+    @Override
+    void onApplicationEvent(ServerStartupEvent event) {
+        host = event.getSource().getHost()
+    }
 }
