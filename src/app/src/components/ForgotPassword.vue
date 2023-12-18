@@ -11,7 +11,7 @@
                   class="mb-6 w-full"
                   required
                   label="Email"
-                  autofocus="true"
+                  autofocus
                   error-messages="Must be a valid email address"
                   v-model="email">
         </va-input>

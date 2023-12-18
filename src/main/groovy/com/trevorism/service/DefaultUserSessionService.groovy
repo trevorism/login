@@ -22,12 +22,11 @@ class DefaultUserSessionService implements UserSessionService {
 
     private static final Logger log = LoggerFactory.getLogger(DefaultUserSessionService.class.getName())
 
-
     private SecureHttpClient secureHttpClient
     private Repository<ForgotPasswordLink> forgotPasswordLinkRepository
     private Repository<User> repository
     private PropertiesProvider propertiesProvider = new ClasspathBasedPropertiesProvider()
-    private ForgotPasswordEmailer forgotPasswordEmailer;
+    private ForgotPasswordEmailer forgotPasswordEmailer
 
     private final Gson gson = new Gson()
 
@@ -77,7 +76,7 @@ class DefaultUserSessionService implements UserSessionService {
         ForgotPasswordLink forgotPasswordLink = new ForgotPasswordLink(username: user.username)
 
         forgotPasswordLink = forgotPasswordLinkRepository.create(forgotPasswordLink)
-        .sendForgotPasswordEmail(forgotPasswordRequest.email, forgotPasswordLink.username, forgotPasswordLink.toResetUrl())
+        forgotPasswordEmailer.sendForgotPasswordEmail(forgotPasswordRequest.email, forgotPasswordLink.username, forgotPasswordLink.toResetUrl())
     }
 
     @Override

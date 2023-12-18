@@ -81,7 +81,7 @@ export default {
           if (returnUrl) {
             window.location.href = returnUrl
           } else {
-            self.$router.push('/')
+            window.location.href = "https://trevorism.com"
           }
         })
         .catch(() => {

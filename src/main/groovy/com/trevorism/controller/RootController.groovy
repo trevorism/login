@@ -7,7 +7,6 @@ import io.micronaut.http.HttpResponse
 import io.micronaut.http.MediaType
 import io.micronaut.http.annotation.Controller
 import io.micronaut.http.annotation.Get
-import io.micronaut.runtime.server.event.ServerStartupEvent
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
@@ -18,10 +17,9 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
 @Controller("/api")
-class RootController implements ApplicationEventListener<ServerStartupEvent> {
+class RootController {
 
     private static final Logger log = LoggerFactory.getLogger(RootController)
-    String host
 
     @Tag(name = "Root Operations")
     @Operation(summary = "Context Root of the Application")
@@ -75,15 +73,4 @@ class RootController implements ApplicationEventListener<ServerStartupEvent> {
         client.get("https://auth.trevorism.com/ping", {} as FutureCallback)
     }
 
-    @Tag(name = "Root Operations")
-    @Operation(summary = "Gets the current host")
-    @Get(value = "/host")
-    String getCurrentHost(){
-        return host
-    }
-
-    @Override
-    void onApplicationEvent(ServerStartupEvent event) {
-        host = event.getSource().getHost()
-    }
 }
