@@ -14,8 +14,8 @@ class ForgotPasswordEmailer {
         this.emailClient = new EmailClient(secureHttpClient)
     }
 
-    void sendForgotPasswordEmail(String emailAddress, String username, String link){
-        Email email = new Email(recipients: emailAddress, subject: "Trevorism: Forgot Password", body: buildBody(username, link))
+    Email sendForgotPasswordEmail(String emailAddress, String username, String link){
+        Email email = new Email(recipients: [emailAddress], subject: "Trevorism: Forgot Password", body: buildBody(username, link))
         emailClient.sendEmail(email)
     }
 

@@ -10,6 +10,6 @@ class ForgotPasswordLink {
     Date expireDate = Date.from(Instant.now().plus(1, ChronoUnit.HOURS))
 
     String toResetUrl() {
-        return "https://trevorism.com/api/login/reset/${id}"
+        return "https://login.auth.trevorism.com/api/login/reset/${id}"
     }
 }

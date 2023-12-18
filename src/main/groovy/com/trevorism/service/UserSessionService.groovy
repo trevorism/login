@@ -11,7 +11,7 @@ interface UserSessionService {
 
     User getUserFromToken(String bearerToken)
 
-    void generateForgotPasswordLink(ForgotPasswordRequest forgotPasswordRequest)
+    boolean generateForgotPasswordLink(ForgotPasswordRequest forgotPasswordRequest)
 
     void resetPassword(String resetId)
 

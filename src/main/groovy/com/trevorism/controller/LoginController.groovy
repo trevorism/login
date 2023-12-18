@@ -47,9 +47,9 @@ class LoginController {
     @Tag(name = "Login Operations")
     @Operation(summary = "Sends an email for forgotten passwords")
     @Post(value = "/forgot", produces = MediaType.APPLICATION_JSON, consumes = MediaType.APPLICATION_JSON)
-    void forgotPassword(@Body ForgotPasswordRequest request) {
+    boolean forgotPassword(@Body ForgotPasswordRequest request) {
         try {
-            userSessionService.generateForgotPasswordLink(request)
+            return userSessionService.generateForgotPasswordLink(request)
         } catch (Exception e) {
             throw new HttpResponseException(400, e.message)
         }

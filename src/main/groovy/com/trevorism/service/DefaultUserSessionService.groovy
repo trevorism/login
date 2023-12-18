@@ -9,6 +9,7 @@ import com.trevorism.data.FastDatastoreRepository
 import com.trevorism.data.Repository
 import com.trevorism.https.AppClientSecureHttpClient
 import com.trevorism.https.SecureHttpClient
+import com.trevorism.model.Email
 import com.trevorism.model.ForgotPasswordLink
 import com.trevorism.model.ForgotPasswordRequest
 import com.trevorism.model.LoginRequest
@@ -63,7 +64,7 @@ class DefaultUserSessionService implements UserSessionService {
 
 
     @Override
-    void generateForgotPasswordLink(ForgotPasswordRequest forgotPasswordRequest) {
+    boolean generateForgotPasswordLink(ForgotPasswordRequest forgotPasswordRequest) {
         List<User> users = repository.list()
         User user = users.find { it.email.toLowerCase() == forgotPasswordRequest.email.toLowerCase() }
 
@@ -76,7 +77,8 @@ class DefaultUserSessionService implements UserSessionService {
         ForgotPasswordLink forgotPasswordLink = new ForgotPasswordLink(username: user.username)
 
         forgotPasswordLink = forgotPasswordLinkRepository.create(forgotPasswordLink)
-        forgotPasswordEmailer.sendForgotPasswordEmail(forgotPasswordRequest.email, forgotPasswordLink.username, forgotPasswordLink.toResetUrl())
+        Email email = forgotPasswordEmailer.sendForgotPasswordEmail(forgotPasswordRequest.email, forgotPasswordLink.username, forgotPasswordLink.toResetUrl())
+        return email != null
     }
 
     @Override
