@@ -1,30 +1,28 @@
 <template>
   <div id="forgot" class="grid justify-items-center">
-    <header-bar :local=false></header-bar>
+    <header-bar :local="false"></header-bar>
     <div class="grid justify-items-center">
-      <h2 class=" text-xl font-bold py-6 my-6">Forgot Password on Trevorism</h2>
+      <h2 class="text-xl font-bold py-6 my-6">Forgot Password on Trevorism</h2>
       <div class="mb-2 ml-2">We will send you a link to reset your password.</div>
     </div>
     <va-form class="border-2 rounded-md w-80" autofocus>
       <div class="mx-4 mt-4 mb-4">
-        <va-input type="email"
-                  class="mb-6 w-full"
-                  required
-                  label="Email"
-                  autofocus
-                  error-messages="Must be a valid email address"
-                  v-model="email">
+        <va-input
+          type="email"
+          class="mb-6 w-full"
+          required
+          label="Email"
+          autofocus
+          error-messages="Must be a valid email address"
+          v-model="email"
+        >
         </va-input>
         <div class="w-full flex justify-between">
           <va-button color="success" :disabled="disabled" @click="invokeButton">
-            <VaInnerLoading :loading="disabled">
-              Submit
-            </VaInnerLoading>
+            <VaInnerLoading :loading="disabled"> Submit </VaInnerLoading>
           </va-button>
 
-          <va-button color="danger" to="/">
-            Cancel
-          </va-button>
+          <va-button color="danger" to="/"> Cancel </va-button>
         </div>
       </div>
     </va-form>
@@ -42,7 +40,7 @@ import axios from 'axios'
 
 export default {
   name: 'ForgotPassword',
-  components: {HeaderBar},
+  components: { HeaderBar },
   data() {
     return {
       email: '',
@@ -58,17 +56,18 @@ export default {
       }
       this.disabled = true
       this.errorMessage = ''
-      axios.post('api/login/forgot', request)
-          .then(() => {
-            this.disabled = false
-            this.errorMessage = ''
-            this.successMessage = 'Email sent successfully!'
-          })
-          .catch(() => {
-            this.errorMessage = 'Unable to find the email address'
-            this.successMessage = ''
-            this.disabled = false
-          })
+      axios
+        .post('api/login/forgot', request)
+        .then(() => {
+          this.disabled = false
+          this.errorMessage = ''
+          this.successMessage = 'Email sent successfully!'
+        })
+        .catch(() => {
+          this.errorMessage = 'Unable to find the email address'
+          this.successMessage = ''
+          this.disabled = false
+        })
     }
   }
 }
@@ -81,6 +80,6 @@ export default {
 }
 
 .formWidth {
-  width: 400px
+  width: 400px;
 }
 </style>

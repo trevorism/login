@@ -9,7 +9,7 @@ import com.trevorism.data.FastDatastoreRepository
 import com.trevorism.data.Repository
 import com.trevorism.https.AppClientSecureHttpClient
 import com.trevorism.https.SecureHttpClient
-import com.trevorism.model.ChangePasswordRequest
+
 import com.trevorism.model.Email
 import com.trevorism.model.ForgotPasswordLink
 import com.trevorism.model.ForgotPasswordRequest
@@ -94,14 +94,6 @@ class DefaultUserSessionService implements UserSessionService {
         String toPost = gson.toJson(["username": link.username])
         secureHttpClient.post("https://auth.trevorism.com/user/reset", toPost)
         forgotPasswordLinkRepository.delete(resetId)
-    }
-
-    @Override
-    boolean changePassword(ChangePasswordRequest changePasswordRequest, String token) {
-        String json = gson.toJson(changePasswordRequest)
-        def response = secureHttpClient.post("https://auth.trevorism.com/user/change", json, ["Authorization": "bearer ${token}".toString()])
-        String value = response.value
-        return value == "true"
     }
 
     private String invokeTokenRequest(String json) {
