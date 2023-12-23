@@ -1,9 +1,13 @@
 package com.trevorism.controller
 
+import com.trevorism.model.ChangePasswordRequest
 import com.trevorism.model.ForgotPasswordRequest
 import com.trevorism.model.LoginRequest
 import com.trevorism.model.User
+import com.trevorism.secure.Roles
+import com.trevorism.secure.Secure
 import com.trevorism.service.UserSessionService
+import io.micronaut.http.HttpRequest
 import io.micronaut.http.HttpResponse
 import io.micronaut.http.MediaType
 import io.micronaut.http.annotation.Body
@@ -64,5 +68,18 @@ class LoginController {
         } catch (Exception e) {
             throw new HttpResponseException(400, e.message)
         }
+    }
+
+    @Tag(name = "Login Operations")
+    @Operation(summary = "Change a user's password **Secure")
+    @Post(value = "/change", produces = MediaType.APPLICATION_JSON, consumes = MediaType.APPLICATION_JSON)
+    @Secure(Roles.USER)
+    boolean changePassword(@Body ChangePasswordRequest request, HttpRequest<?> requestContext) {
+        String value = requestContext.getCookies().get("session").value
+        def result = userSessionService.changePassword(request, value)
+        if (!result) {
+            throw new HttpResponseException(400, "Unable to change password successfully")
+        }
+        return result
     }
 }

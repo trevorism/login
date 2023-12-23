@@ -34,9 +34,12 @@
         />
 
         <div class="grid justify-items-center">
-          <va-button color="success" :disabled="disabled" type="submit">
-            Submit
-          </va-button>
+
+            <va-button color="success" :disabled="disabled" type="submit">
+              <VaInnerLoading :loading="disabled">
+                Submit
+              </VaInnerLoading>
+            </va-button>
         </div>
       </div>
     </va-form>
@@ -73,6 +76,7 @@ export default {
         password: this.password
       }
       this.disabled = true
+      this.errorMessage = ''
       axios.post('api/login', request)
         .then(() => {
           this.disabled = false

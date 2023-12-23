@@ -17,7 +17,9 @@
         </va-input>
         <div class="w-full flex justify-between">
           <va-button color="success" :disabled="disabled" @click="invokeButton">
-            Submit
+            <VaInnerLoading :loading="disabled">
+              Submit
+            </VaInnerLoading>
           </va-button>
 
           <va-button color="danger" to="/">
@@ -55,6 +57,7 @@ export default {
         email: this.email
       }
       this.disabled = true
+      this.errorMessage = ''
       axios.post('api/login/forgot', request)
           .then(() => {
             this.disabled = false
