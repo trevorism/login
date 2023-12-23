@@ -59,9 +59,10 @@ class LoginController {
     @Tag(name = "Login Operations")
     @Operation(summary = "Resets password")
     @Get(value = "/reset/{resetId}", produces = MediaType.APPLICATION_JSON)
-    void resetPassword(String resetId) {
+    String resetPassword(String resetId) {
         try {
             userSessionService.resetPassword(resetId)
+            return "Password reset successfully. Check your email for your temporary password."
         } catch (Exception e) {
             throw new HttpResponseException(400, e.message)
         }
