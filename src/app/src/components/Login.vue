@@ -51,6 +51,7 @@ import axios from 'axios'
 import mixpanel from 'mixpanel-browser';
 
 export default {
+  inject: ['mixpanel'],
   name: 'Login',
   components: { HeaderBar },
   data() {
@@ -77,8 +78,8 @@ export default {
         .post('api/login', request)
         .then(() => {
           this.disabled = false
+          self.mixpanel.identify(self.username)
           this.clear()
-          mixpanel.identify(self.username)
           let returnUrl = self.$route.query.return_url
           if (returnUrl) {
             window.location.href = returnUrl
