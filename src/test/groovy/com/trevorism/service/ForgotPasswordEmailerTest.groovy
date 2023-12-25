@@ -13,5 +13,4 @@ class ForgotPasswordEmailerTest {
         assert body.contains("myLink")
     }
 
-
 }

@@ -48,7 +48,7 @@
 <script>
 import HeaderBar from '@trevorism/ui-header-bar'
 import axios from 'axios'
-import { useForm } from 'vuestic-ui'
+import mixpanel from 'mixpanel-browser';
 
 export default {
   name: 'Login',
@@ -78,6 +78,7 @@ export default {
         .then(() => {
           this.disabled = false
           this.clear()
+          mixpanel.identify(self.username)
           let returnUrl = self.$route.query.return_url
           if (returnUrl) {
             window.location.href = returnUrl
