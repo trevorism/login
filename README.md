@@ -4,5 +4,7 @@
 ![GitHub language count](https://img.shields.io/github/languages/count/trevorism/login)
 ![GitHub top language](https://img.shields.io/github/languages/top/trevorism/login)
 
+Login page for trevorism.com
+
 # How to build
 `gradle clean build`
