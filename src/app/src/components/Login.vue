@@ -5,7 +5,7 @@
       <div class="grid justify-items-center">
         <h2 class="text-xl font-bold py-6 my-6">Login to Trevorism</h2>
         <div class="grid justify-items-right">
-          <va-chip flat class="" to="/forgot">Forgot Password?</va-chip>
+          <va-chip flat class="" :to="{ name: 'ForgotPassword', params: { guid: guid } }">Forgot Password?</va-chip>
         </div>
 
         <va-form ref="loginForm" class="border-2 rounded-md w-80" tag="form" @submit.prevent="invokeButton">
@@ -48,9 +48,9 @@
 <script>
 import HeaderBar from '@trevorism/ui-header-bar'
 import axios from 'axios'
-import mixpanel from 'mixpanel-browser';
 
 export default {
+  props: ['guid'],
   inject: ['mixpanel'],
   name: 'Login',
   components: { HeaderBar },
@@ -74,11 +74,10 @@ export default {
       }
       this.disabled = true
       this.errorMessage = ''
-      axios
-        .post('api/login', request)
+      axios.post('api/login/' + this.guid, request)
         .then(() => {
           this.disabled = false
-          self.mixpanel.identify(self.username)
+          this.mixpanel.identify(self.username)
           this.clear()
           let returnUrl = self.$route.query.return_url
           if (returnUrl) {

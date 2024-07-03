@@ -1,6 +1,5 @@
 package com.trevorism.controller
 
-
 import com.trevorism.model.ForgotPasswordRequest
 import com.trevorism.model.LoginRequest
 import com.trevorism.model.User
@@ -28,7 +27,14 @@ class LoginController {
     @Operation(summary = "Login to Trevorism")
     @Post(value = "/", produces = MediaType.APPLICATION_JSON, consumes = MediaType.APPLICATION_JSON)
     HttpResponse login(@Body LoginRequest loginRequest) {
-        String token = userSessionService.getToken(loginRequest)
+        return login(loginRequest, null)
+    }
+
+    @Tag(name = "Login Operations")
+    @Operation(summary = "Login to Trevorism with the given tenant")
+    @Post(value = "/{guid}", produces = MediaType.APPLICATION_JSON, consumes = MediaType.APPLICATION_JSON)
+    HttpResponse login(@Body LoginRequest loginRequest, String guid) {
+        String token = userSessionService.getToken(loginRequest, guid)
         if (!token) {
             throw new HttpResponseException(400, "Invalid username or password")
         }
@@ -60,12 +66,18 @@ class LoginController {
     @Operation(summary = "Resets password")
     @Get(value = "/reset/{resetId}", produces = MediaType.APPLICATION_JSON)
     String resetPassword(String resetId) {
+        return resetPassword(null, resetId)
+    }
+
+    @Tag(name = "Login Operations")
+    @Operation(summary = "Resets password for a given tenant")
+    @Get(value = "/reset/{tenantId}/{resetId}", produces = MediaType.APPLICATION_JSON)
+    String resetPassword(String tenantId, String resetId) {
         try {
-            userSessionService.resetPassword(resetId)
+            userSessionService.resetPassword(tenantId, resetId)
             return "Password reset successfully. Check your email for your temporary password."
         } catch (Exception e) {
             throw new HttpResponseException(400, e.message)
         }
     }
-
 }

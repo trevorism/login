@@ -8,12 +8,12 @@ import com.trevorism.model.User
 
 interface UserSessionService {
 
-    String getToken(LoginRequest loginRequest)
+    String getToken(LoginRequest loginRequest, String guid)
 
     User getUserFromToken(String bearerToken)
 
     boolean generateForgotPasswordLink(ForgotPasswordRequest forgotPasswordRequest)
 
-    void resetPassword(String resetId)
+    void resetPassword(String tenantId, String resetId)
 
 }

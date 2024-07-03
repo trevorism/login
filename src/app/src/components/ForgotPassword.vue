@@ -19,16 +19,16 @@
         </va-input>
         <div class="w-full flex justify-between">
           <va-button color="success" :disabled="disabled" @click="invokeButton">
-            <VaInnerLoading :loading="disabled"> Submit </VaInnerLoading>
+            <va-inner-loading :loading="disabled"> Submit </va-inner-loading>
           </va-button>
 
-          <va-button color="danger" to="/"> Cancel </va-button>
+          <va-button color="danger" :to="{ name: 'Login', params: { guid: guid } }"> Cancel </va-button>
         </div>
       </div>
     </va-form>
     <div v-if="successMessage !== ''" class="w-80 text-center">
       {{ successMessage }}
-      <va-chip flat class="grid justify-items-center basis-1/4" to="/">Login</va-chip>
+      <va-chip flat class="grid justify-items-center basis-1/4" :to="{ name: 'Login', params: { guid: guid } }">Login</va-chip>
     </div>
     <va-alert v-if="errorMessage.length > 0" class="w-80 text-center" color="danger">{{ errorMessage }}</va-alert>
   </div>
@@ -40,6 +40,7 @@ import axios from 'axios'
 
 export default {
   name: 'ForgotPassword',
+  props: ['guid'],
   components: { HeaderBar },
   data() {
     return {
@@ -52,7 +53,8 @@ export default {
   methods: {
     invokeButton: function () {
       let request = {
-        email: this.email
+        email: this.email,
+        tenantId: this.guid
       }
       this.disabled = true
       this.errorMessage = ''

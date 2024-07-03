@@ -2,7 +2,6 @@ package com.trevorism.controller
 
 import com.trevorism.http.async.AsyncHttpClient
 import com.trevorism.http.async.AsyncJsonHttpClient
-import io.micronaut.context.event.ApplicationEventListener
 import io.micronaut.http.HttpResponse
 import io.micronaut.http.MediaType
 import io.micronaut.http.annotation.Controller
@@ -61,7 +60,7 @@ class RootController {
     )
     @Get(value = "/version", produces = MediaType.TEXT_PLAIN)
     String version() {
-        return "0.1.0"
+        return "0.2.0"
     }
 
     @Tag(name = "Root Operations")

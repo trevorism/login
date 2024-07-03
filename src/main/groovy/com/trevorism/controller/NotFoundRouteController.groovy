@@ -13,7 +13,6 @@ import jakarta.inject.Inject
 @Controller("/notfound")
 class NotFoundRouteController {
 
-
     @Inject
     ResourceResolver resourceResolver
 
