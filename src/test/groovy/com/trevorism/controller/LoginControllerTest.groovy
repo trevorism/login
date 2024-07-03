@@ -17,10 +17,10 @@ class LoginControllerTest {
     @BeforeEach
     void setup() {
         loginController = new LoginController()
-        loginController.userSessionService = [getToken: { lr -> lr.username },
+        loginController.userSessionService = [getToken: { lr, guid -> lr.username },
                                               getUserFromToken: { token -> new User(username: token) },
                                               generateForgotPasswordLink: { val -> if (!val) throw new RuntimeException() else true },
-                                              resetPassword: { r -> if (!r) throw new RuntimeException() },
+                                              resetPassword: { tId, r -> if (!r) throw new RuntimeException() },
                                               sendLoginEvent: { user -> }] as UserSessionService
     }
 
