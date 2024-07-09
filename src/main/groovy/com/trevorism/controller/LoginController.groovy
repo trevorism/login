@@ -1,6 +1,9 @@
 package com.trevorism.controller
 
+import com.trevorism.http.async.AsyncHttpClient
+import com.trevorism.http.async.AsyncJsonHttpClient
 import com.trevorism.model.ForgotPasswordRequest
+import com.trevorism.model.LoginEvent
 import com.trevorism.model.LoginRequest
 import com.trevorism.model.User
 import com.trevorism.service.UserSessionService
@@ -23,6 +26,8 @@ class LoginController {
     @Inject
     private UserSessionService userSessionService
 
+    private AsyncHttpClient asyncHttpClient = new AsyncJsonHttpClient()
+
     @Tag(name = "Login Operations")
     @Operation(summary = "Login to Trevorism")
     @Post(value = "/", produces = MediaType.APPLICATION_JSON, consumes = MediaType.APPLICATION_JSON)
@@ -36,11 +41,13 @@ class LoginController {
     HttpResponse login(@Body LoginRequest loginRequest, String guid) {
         String token = userSessionService.getToken(loginRequest, guid)
         if (!token) {
+            sendLoginEvent(loginRequest, guid, false)
             throw new HttpResponseException(400, "Invalid username or password")
         }
 
         User user = userSessionService.getUserFromToken(token)
         if (User.isNullUser(user)) {
+            sendLoginEvent(loginRequest, guid, false)
             throw new HttpResponseException(400, "Unable to find user")
         }
 
@@ -48,6 +55,7 @@ class LoginController {
         def cookie2 = new NettyCookie("user_name", loginRequest.username).path("/").maxAge(15 * 60).secure(true).domain(".trevorism.com")
         def cookie3 = new NettyCookie("admin", user.admin.toString()).path("/").maxAge(15 * 60).secure(true).domain(".trevorism.com")
 
+        sendLoginEvent(loginRequest, guid, true)
         return HttpResponse.ok().cookies([cookie1, cookie2, cookie3] as Set<Cookie>)
     }
 
@@ -79,5 +87,10 @@ class LoginController {
         } catch (Exception e) {
             throw new HttpResponseException(400, e.message)
         }
+    }
+
+    private void sendLoginEvent(LoginRequest loginRequest, String guid, boolean success) {
+        String eventJson = LoginEvent.createEventJson(loginRequest.username, guid, success)
+        asyncHttpClient.post("https://event.data.trevorism.com/event/login", eventJson, null)
     }
 }
