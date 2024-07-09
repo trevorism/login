@@ -1,5 +1,6 @@
 package com.trevorism.controller
 
+import com.trevorism.http.async.AsyncHttpClient
 import com.trevorism.model.ForgotPasswordRequest
 import com.trevorism.model.LoginRequest
 import com.trevorism.model.User
@@ -17,6 +18,7 @@ class LoginControllerTest {
     @BeforeEach
     void setup() {
         loginController = new LoginController()
+        loginController.asyncHttpClient = [post: { url, content, callback -> { }  }] as AsyncHttpClient
         loginController.userSessionService = [getToken: { lr, guid -> lr.username },
                                               getUserFromToken: { token -> new User(username: token) },
                                               generateForgotPasswordLink: { val -> if (!val) throw new RuntimeException() else true },
