@@ -1,3 +1,7 @@
+## 0.4.0
+
+Enable Login with Microsoft
+
 ## 0.3.0
 
 Send a login event to track all Trevorism logins.

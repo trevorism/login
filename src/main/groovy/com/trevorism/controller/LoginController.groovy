@@ -19,9 +19,13 @@ import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.inject.Inject
 import org.apache.hc.client5.http.HttpResponseException
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 
 @Controller("/api/login")
 class LoginController {
+
+    private static final Logger log = LoggerFactory.getLogger(LoginController)
 
     @Inject
     private UserSessionService userSessionService
@@ -93,4 +97,5 @@ class LoginController {
         String eventJson = LoginEvent.createEventJson(loginRequest.username, guid, success)
         asyncHttpClient.post("https://event.data.trevorism.com/event/login", eventJson, null)
     }
+
 }

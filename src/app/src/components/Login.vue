@@ -43,17 +43,22 @@
       </div>
     </div>
   </div>
+  <div class="grid justify-items-center">
+    <h4 class="text-large font-bold py-6">or login with Microsoft</h4>
+    <img src="/ms-symbollockup_signin_light_short.svg" alt="Microsoft Sign In" @click="loginMicrosoft">
+  </div>
 </template>
 
 <script>
 import HeaderBar from '@trevorism/ui-header-bar'
 import axios from 'axios'
+import {VaButton} from "vuestic-ui";
 
 export default {
   props: ['guid'],
   inject: ['mixpanel'],
   name: 'Login',
-  components: { HeaderBar },
+  components: {VaButton, HeaderBar },
   data() {
     return {
       username: '',
@@ -66,6 +71,20 @@ export default {
     axios.get('api/authWarmup')
   },
   methods: {
+    loginMicrosoft: function() {
+      let returnUrl = this.$route.query.return_url
+      let url = 'api/microsoft/' + this.guid
+      if(returnUrl) {
+        url += '?return_url=' + encodeURIComponent(returnUrl)
+      }
+      axios.get(url)
+        .then(response => {
+          window.location.href = response.data
+        })
+        .catch(() => {
+          this.errorMessage = 'Unable to login with Microsoft'
+        })
+    },
     invokeButton: function () {
       let self = this
       let request = {
