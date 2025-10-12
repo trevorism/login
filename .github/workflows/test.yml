@@ -22,7 +22,7 @@ jobs:
     if: ${{inputs.TEST_TYPE == 'cucumber'}}
     uses: trevorism/actions-workflows/.github/workflows/accept.yml@master
     with:
-      JDK_VERSION: 21git 
+      JDK_VERSION: 21
 
   call-cypress:
     if: ${{inputs.TEST_TYPE == 'cypress'}}

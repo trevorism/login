@@ -26,29 +26,29 @@ import org.apache.hc.core5.http.message.BasicNameValuePair
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
-@Controller("/api/microsoft")
-class MicrosoftController {
+@Controller("/api/google")
+class GoogleController {
 
-    private static final Logger log = LoggerFactory.getLogger(MicrosoftController)
+    private static final Logger log = LoggerFactory.getLogger(GoogleController)
     private final Gson gson = new GsonBuilder().disableHtmlEscaping().setDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").create()
 
-    public static final String tenantId = "d77da90e-329a-41c3-b8b7-f76b8bf71b06"
-    public static final String clientId = "c3ede79b-cc30-4f21-818c-45f727113b0e"
-    public static final String instance = "https://login.microsoftonline.com"
-    public static final String redirectUri = "https://login.auth.trevorism.com/api/microsoft/callback"
-    //public static final String redirectUri = "http://localhost:5173/api/microsoft/callback"
+    public static String clientId = "20040999009-8gnongpbu2fujg8at7bvl3st1h37hpaq.apps.googleusercontent.com"
+    public static final String oauth2AuthCodeUrl = "https://accounts.google.com/o/oauth2/v2/auth"
+    public static final String oauth2TokenUrl = "https://oauth2.googleapis.com/token"
+    public static final String redirectUri = "https://login.auth.trevorism.com/api/google/callback"
+    //public static final String redirectUri = "http://localhost:5173/api/google/callback"
 
-    @Tag(name = "Microsoft Operations")
-    @Operation(summary = "Gets a Microsoft login URL")
+    @Tag(name = "Google Operations")
+    @Operation(summary = "Gets a Google login URL")
     @Get(value = "/", produces = MediaType.APPLICATION_JSON)
-    String getMicrosoftLoginUrl( @QueryValue Optional<String> return_url) {
-        return getMicrosoftLoginUrl(null, return_url)
+    String getGoogleLoginUrl( @QueryValue Optional<String> return_url) {
+        return getGoogleLoginUrl(null, return_url)
     }
 
-    @Tag(name = "Microsoft Operations")
-    @Operation(summary = "Gets a Microsoft login URL for a given tenant")
+    @Tag(name = "Google Operations")
+    @Operation(summary = "Gets a Google login URL for a given tenant")
     @Get(value = "/{guid}", produces = MediaType.APPLICATION_JSON)
-    String getMicrosoftLoginUrl(String guid, @QueryValue Optional<String> return_url) {
+    String getGoogleLoginUrl(String guid, @QueryValue Optional<String> return_url) {
         String baseState = UUID.randomUUID().toString()
         String returnUrl = return_url.orElse("https://trevorism.com")
         String stateValue = baseState + "|" + returnUrl
@@ -57,11 +57,10 @@ class MicrosoftController {
         }
 
         String state = URLEncoder.encode(stateValue, "UTF-8")
-
-        return "${instance}/${tenantId}/oauth2/v2.0/authorize?client_id=${clientId}&response_type=code&redirect_uri=${redirectUri}&response_mode=query&scope=openid%20profile%20email&state=${state}"
+        return "${oauth2AuthCodeUrl}?client_id=${clientId}&response_type=code&redirect_uri=${redirectUri}&scope=openid%20profile%20email&access_type=online&state=${state}"
     }
 
-    @Tag(name = "Microsoft Operations")
+    @Tag(name = "Google Operations")
     @Operation(summary = "Receives oauth2 authorization code callback")
     @Get(value = "/callback", produces = MediaType.APPLICATION_JSON)
     HttpResponse receiveAuthorizationCodeCallback(@QueryValue String code, @QueryValue String state) {
@@ -70,9 +69,9 @@ class MicrosoftController {
         String returnUrl = parts.length > 1 ? parts[1] : "https://trevorism.com"
         String guid = parts.length > 2 ? parts[2] : null
 
-        String clientSecret = new ClasspathBasedPropertiesProvider().getProperty("apiSecret")
+        String clientSecret = new ClasspathBasedPropertiesProvider().getProperty("apiSecret2")
         CloseableHttpClient httpClient = HttpClients.createDefault()
-        HttpPost httpPost = new HttpPost("${instance}/${tenantId}/oauth2/token")
+        HttpPost httpPost = new HttpPost("${oauth2TokenUrl}")
         httpPost.addHeader("Content-Type", "application/x-www-form-urlencoded")
 
         List<NameValuePair> params = [
@@ -90,8 +89,8 @@ class MicrosoftController {
         Oauth2Tokens tokens = Oauth2Tokens.fromOauth2Response(oauth2Response, guid)
 
         HttpClient client = new JsonHttpClient()
-        //String token = client.post("http://localhost:8081/microsoft", gson.toJson(tokens))
-        String token = client.post("https://auth.trevorism.com/microsoft", gson.toJson(tokens))
+        //String token = client.post("http://localhost:8081/google", gson.toJson(tokens))
+        String token = client.post("https://auth.trevorism.com/google", gson.toJson(tokens))
 
         def cookie1 = new NettyCookie("session", token).path("/").maxAge(15 * 60).secure(true).domain(".trevorism.com")
         def cookie2 = new NettyCookie("user_name", "unknown").path("/").maxAge(15 * 60).secure(true).domain(".trevorism.com")

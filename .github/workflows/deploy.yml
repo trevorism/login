@@ -20,12 +20,13 @@ jobs:
       JDK_VERSION: 21
       gcp_project: 'trevorism-auth'
       gcp_project_id: '20040999009'
-      version: '0-4-0'
+      version: '0-5-0'
     secrets:
       CLIENT_ID: ${{ secrets.CLIENT_ID }}
       CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
       SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
       API_SECRET: ${{ secrets.API_SECRET }}
+      API_SECRET_2: ${{ secrets.API_SECRET_2 }}
 
   call-accept-after:
     uses: trevorism/actions-workflows/.github/workflows/accept.yml@master

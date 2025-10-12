@@ -1,3 +1,7 @@
+## 0.5.0
+
+Enable Login with Google
+
 ## 0.4.0
 
 Enable Login with Microsoft
