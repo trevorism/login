@@ -1,3 +1,7 @@
+## 0.6.0
+
+Major refactor to cleanup controllers and services.
+
 ## 0.5.0
 
 Enable Login with Google
