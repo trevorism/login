@@ -1,3 +1,7 @@
+## 1.0.0
+
+Changed UI to use latest Vuestic/tailwind css and other js components.
+
 ## 0.6.0
 
 Major refactor to cleanup controllers and services.

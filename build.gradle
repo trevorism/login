@@ -118,29 +118,29 @@ node{
     nodeProjectDir = file("${project.projectDir}/src/app")
 }
 
-task installNodeDependencies(type: NpmTask) {
+tasks.register('installNodeDependencies', NpmTask) {
     group = "npm"
     args = ['install']
 }
 
-task buildApp(type: NpmTask) {
+tasks.register('buildApp', NpmTask) {
     dependsOn('installNodeDependencies')
     outputs.dir("src/app/dist")
     group = "npm"
     args = ['run', 'build']
 }
 
-task testApp(type: NpmTask) {
+tasks.register('testApp', NpmTask) {
     group = "npm"
     args = ['run', 'accept']
 }
 
-task runApp(type: NpmTask) {
+tasks.register('runApp', NpmTask) {
     group = "npm"
-    args = ['run','dev']
+    args = ['run', 'dev']
 }
 
-task copyFrontEnd(type: Copy){
+tasks.register('copyFrontEnd', Copy) {
     dependsOn("buildApp")
     mustRunAfter(compileGroovy)
     from "src/app/dist"
