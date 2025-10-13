@@ -17,7 +17,6 @@
               label="Username"
               minlength="3"
               type="text"
-              autofocus
               required
               error-messages="Must be at least 3 characters"
             />
