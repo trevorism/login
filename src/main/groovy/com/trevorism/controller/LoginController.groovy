@@ -60,9 +60,9 @@ class LoginController {
         int accessMaxAge = 15 * 60
         int refreshMaxAge = 24 * 60 * 60
 
-        def cookie1 = new NettyCookie("session", token).path("/").maxAge(accessMaxAge).secure(true).domain(".trevorism.com")
-        def cookie2 = new NettyCookie("user_name", loginRequest.username).path("/").maxAge(accessMaxAge).secure(true).domain(".trevorism.com")
-        def cookie3 = new NettyCookie("admin", user.admin.toString()).path("/").maxAge(accessMaxAge).secure(true).domain(".trevorism.com")
+        def cookie1 = new NettyCookie("session", token).path("/").maxAge(accessMaxAge).secure(true).domain(".trevorism.com").httpOnly(true)
+        def cookie2 = new NettyCookie("user_name", loginRequest.username).path("/").maxAge(refreshMaxAge).secure(true).domain(".trevorism.com")
+        def cookie3 = new NettyCookie("admin", user.admin.toString()).path("/").maxAge(refreshMaxAge).secure(true).domain(".trevorism.com")
         def cookie4 = new NettyCookie("refresh_token", refreshToken ?: "").path("/").maxAge(refreshMaxAge).secure(true).domain(".trevorism.com").httpOnly(true)
 
         sendLoginEvent(loginRequest, guid, true)
