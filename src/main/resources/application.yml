@@ -3,6 +3,20 @@ micronaut:
     name: login
   server:
     http-to-https-redirect: true
+    cors:
+      enabled: true
+      configurations:
+        web:
+          allowed-origins:
+            - '^https://([a-zA-Z0-9-]+\.)?trevorism\.com$'
+          allowed-methods:
+            - GET
+            - POST
+            - OPTIONS
+          allowed-headers:
+            - Content-Type
+          allow-credentials: true
+          max-age: 1800
   security:
     enabled: true
     redirect:
