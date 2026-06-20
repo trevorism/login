@@ -1,4 +1,4 @@
-runtime: java21
+runtime: java25
 service: login
 entrypoint: java -jar login-all.jar
 handlers:
