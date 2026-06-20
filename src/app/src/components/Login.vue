@@ -142,14 +142,17 @@ export default {
       axios.post(url, request)
         .then(() => {
           this.disabled = false
-          this.mixpanel.identify(self.username)
-          this.clear()
           let returnUrl = self.$route.query.return_url
-          if (returnUrl) {
-            window.location.href = returnUrl
-          } else {
-            window.location.href = 'https://trevorism.com'
+          // Non-essential side effects must never block the redirect on a
+          // successful login, otherwise a thrown error here routes a valid
+          // 200 into .catch() and shows "Unable to login".
+          try {
+            this.mixpanel.identify(self.username)
+            this.clear()
+          } catch (e) {
+            console.warn('Post-login side effect failed', e)
           }
+          window.location.href = returnUrl || 'https://trevorism.com'
         })
         .catch(() => {
           this.errorMessage = 'Unable to login'
