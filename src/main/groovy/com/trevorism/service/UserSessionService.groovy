@@ -10,6 +10,10 @@ interface UserSessionService {
 
     String getToken(LoginRequest loginRequest, String guid)
 
+    String getRefreshToken(LoginRequest loginRequest, String guid)
+
+    String redeemRefreshToken(String refreshToken)
+
     User getUserFromToken(String bearerToken)
 
     boolean generateForgotPasswordLink(ForgotPasswordRequest forgotPasswordRequest)
