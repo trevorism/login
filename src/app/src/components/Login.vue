@@ -104,7 +104,7 @@ export default {
   methods: {
     loginGoogle: function() {
       let returnUrl = this.$route.query.return_url
-      let url = 'api/google/' + this.guid
+      let url = this.guid ? 'api/google/' + this.guid : 'api/google'
       if(returnUrl) {
         url += '?return_url=' + encodeURIComponent(returnUrl)
       }
@@ -118,7 +118,7 @@ export default {
     },
     loginMicrosoft: function() {
       let returnUrl = this.$route.query.return_url
-      let url = 'api/microsoft/' + this.guid
+      let url = this.guid ? 'api/microsoft/' + this.guid : 'api/microsoft'
       if(returnUrl) {
         url += '?return_url=' + encodeURIComponent(returnUrl)
       }
@@ -138,7 +138,8 @@ export default {
       }
       this.disabled = true
       this.errorMessage = ''
-      axios.post('api/login/' + this.guid, request)
+      let url = this.guid ? 'api/login/' + this.guid : 'api/login'
+      axios.post(url, request)
         .then(() => {
           this.disabled = false
           this.mixpanel.identify(self.username)
