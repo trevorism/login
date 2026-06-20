@@ -23,6 +23,7 @@ class LoginControllerTest {
                                               getUserFromToken: { token -> new User(username: token) },
                                               generateForgotPasswordLink: { val -> if (!val) throw new RuntimeException() else true },
                                               resetPassword: { tId, r -> if (!r) throw new RuntimeException() },
+                                              getRefreshToken: { lr, guid -> "refreshToken" },
                                               sendLoginEvent: { user -> }] as UserSessionService
     }
 
