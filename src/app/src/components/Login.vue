@@ -87,7 +87,6 @@ import {VaButton} from "vuestic-ui";
 
 export default {
   props: ['guid'],
-  inject: ['mixpanel'],
   name: 'Login',
   components: {VaButton, HeaderBar },
   data() {
@@ -147,7 +146,6 @@ export default {
           // successful login, otherwise a thrown error here routes a valid
           // 200 into .catch() and shows "Unable to login".
           try {
-            this.mixpanel.identify(self.username)
             this.clear()
           } catch (e) {
             console.warn('Post-login side effect failed', e)

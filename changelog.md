@@ -1,3 +1,7 @@
+## 1.2.0
+
+Update front end dependencies and add unit tests, js unit tests.
+
 ## 1.1.0
 
 - Upgraded Micronaut to 5.0.2

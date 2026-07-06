@@ -11,18 +11,22 @@ import io.micronaut.http.annotation.ServerFilter
 class CacheControlFilter {
 
     private static final String IMMUTABLE = "public, max-age=31536000, immutable"
-    private static final String NO_STORE = "no-store, no-cache, must-revalidate"
+    private static final String NO_CACHE = "no-cache, must-revalidate"
+    private static final String NO_STORE = "no-store"
 
     @ResponseFilter
     void applyCacheControl(HttpRequest<?> request, MutableHttpResponse<?> response) {
         String path = request.path
         if (path.startsWith("/assets/")) {
-            setCacheControl(response, IMMUTABLE)
+            setCacheControl(response, isSuccess(response) ? IMMUTABLE : NO_STORE)
         } else if (acceptsHtml(request)) {
-            setCacheControl(response, NO_STORE)
-            response.getHeaders().remove(HttpHeaders.LAST_MODIFIED)
-            response.getHeaders().remove(HttpHeaders.ETAG)
+            setCacheControl(response, NO_CACHE)
         }
+    }
+
+    private static boolean isSuccess(MutableHttpResponse<?> response) {
+        int code = response.status.code
+        code >= 200 && code < 300
     }
 
     private static boolean acceptsHtml(HttpRequest<?> request) {
@@ -30,7 +34,6 @@ class CacheControlFilter {
     }
 
     private static void setCacheControl(MutableHttpResponse<?> response, String value) {
-        response.getHeaders().remove(HttpHeaders.CACHE_CONTROL)
-        response.getHeaders().add(HttpHeaders.CACHE_CONTROL, value)
+        response.getHeaders().set(HttpHeaders.CACHE_CONTROL, value)
     }
 }

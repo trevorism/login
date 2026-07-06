@@ -18,12 +18,26 @@ class NotFoundRouteController {
 
     @Error(status = HttpStatus.NOT_FOUND, global = true)
     HttpResponse forward(HttpRequest request) {
-        if (request.getHeaders()
-                .accept()
-                .stream()
-                .anyMatch(mediaType -> mediaType.getName().contains(MediaType.TEXT_HTML))) {
+        if (isSpaRoute(request.path) && acceptsHtml(request)) {
             StreamedFile streamedFile = new StreamedFile(resourceResolver.getResource("classpath:public/index.html").get())
             return HttpResponse.ok(streamedFile)
         }
+        return HttpResponse.notFound()
     }
+
+    private static boolean isSpaRoute(String path) {
+        if (path.startsWith("/assets/") || path.startsWith("/api/")) {
+            return false
+        }
+        int lastSlash = path.lastIndexOf('/')
+        return !path.substring(lastSlash + 1).contains('.')
+    }
+
+    private static boolean acceptsHtml(HttpRequest<?> request) {
+        request.getHeaders()
+                .accept()
+                .stream()
+                .anyMatch(mediaType -> mediaType.getName().contains(MediaType.TEXT_HTML))
+    }
+
 }
