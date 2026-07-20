@@ -29,7 +29,7 @@ class RefreshController {
     @Post(value = "/", produces = MediaType.APPLICATION_JSON)
     HttpResponse refresh(@CookieValue("refresh_token") @Nullable String refreshToken) {
         if (!refreshToken) {
-            return HttpResponse.unauthorized()
+            return HttpResponse.unauthorized().cookies(clearedCookies())
         }
 
         String token = userSessionService.redeemRefreshToken(refreshToken)
