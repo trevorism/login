@@ -7,25 +7,27 @@ package com.trevorism.gcloud
 this.metaClass.mixin(io.cucumber.groovy.Hooks)
 this.metaClass.mixin(io.cucumber.groovy.EN)
 
+String baseUrl = System.getenv("ACCEPTANCE_BASE_URL") ?: "https://login.auth.trevorism.com"
+
 def contextRootContent
 def pingContent
 
 Given(/the application is alive/) {  ->
     try{
-        new URL("https://login.auth.trevorism.com/api/ping").text
+        new URL("${baseUrl}/api/ping").text
     }
     catch (Exception ignored){
         Thread.sleep(10000)
-        new URL("https://login.auth.trevorism.com/api/ping").text
+        new URL("${baseUrl}/api/ping").text
     }
 }
 
 When(/I navigate to {word}/) { String url ->
-    contextRootContent = new URL(url).text
+    contextRootContent = new URL(baseUrl).text
 }
 
 When(/I navigate to \\/ping on {word}/) { String url ->
-    pingContent = new URL("${url}/ping").text
+    pingContent = new URL("${baseUrl}/ping").text
 }
 
 Then(/the API returns a link to the help page/) {  ->
