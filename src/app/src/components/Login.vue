@@ -97,9 +97,6 @@ export default {
       disabled: false
     }
   },
-  mounted() {
-    axios.get('api/authWarmup')
-  },
   methods: {
     loginGoogle: function() {
       let returnUrl = this.$route.query.return_url
