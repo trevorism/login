@@ -2,6 +2,8 @@ const SESSION_MAX_AGE_SECONDS = 15 * 60
 const REFRESH_MAX_AGE_SECONDS = 24 * 60 * 60
 const CLOCK_TOLERANCE_SECONDS = 300
 
+const ORIGIN = Cypress.config('baseUrl')
+
 function expectExpiryNear(cookie, seconds) {
   const remaining = cookie.expiry - Math.floor(Date.now() / 1000)
   expect(remaining, `${cookie.name} lifetime`).to.be.closeTo(seconds, CLOCK_TOLERANCE_SECONDS)
@@ -13,6 +15,10 @@ function credentials() {
     expect(PASSWORD, 'CYPRESS_PASSWORD must be set').to.be.a('string').and.not.be.empty
     return { USERNAME, PASSWORD }
   })
+}
+
+function visitLoginReturningTo(path) {
+  cy.visit('/?return_url=' + encodeURIComponent(ORIGIN + path))
 }
 
 function submitCredentials() {
@@ -33,8 +39,9 @@ describe('a successful login', () => {
   })
 
   it('issues a short lived, http only session cookie for the whole trevorism.com domain', () => {
-    cy.visit('/')
+    visitLoginReturningTo('/')
     submitCredentials()
+    cy.location('search', { timeout: 20000 }).should('equal', '')
 
     cy.getCookie('session').should('not.be.null').then((cookie) => {
       expect(cookie.domain).to.equal('.trevorism.com')
@@ -55,8 +62,9 @@ describe('a successful login', () => {
   })
 
   it('exposes the identity cookies that downstream apps read from the browser', () => {
-    cy.visit('/')
+    visitLoginReturningTo('/')
     submitCredentials()
+    cy.location('search', { timeout: 20000 }).should('equal', '')
 
     credentials().then(({ USERNAME }) => {
       cy.getCookie('user_name').should('not.be.null').then((cookie) => {
@@ -75,10 +83,11 @@ describe('a successful login', () => {
   })
 
   it('hands the browser off to the return url it was given', () => {
-    cy.visit('/?return_url=' + encodeURIComponent('https://trevorism.com/'))
+    visitLoginReturningTo('/forgot')
     submitCredentials()
 
-    cy.location('hostname', { timeout: 20000 }).should('equal', 'trevorism.com')
+    cy.location('pathname', { timeout: 20000 }).should('equal', '/forgot')
+    cy.get('h2').should('contain.text', 'Forgot Password on Trevorism')
     cy.getCookie('session').should('not.be.null')
   })
 })
