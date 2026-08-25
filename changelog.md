@@ -1,3 +1,7 @@
+## 1.3.0
+
+Add cypress test and update dependencies.
+
 ## 1.2.0
 
 Update front end dependencies and add unit tests, js unit tests.

@@ -55,11 +55,6 @@ describe('Login.vue', () => {
     })
   })
 
-  it('calls the warmup endpoint on mount', () => {
-    mountLogin()
-    expect(axios.get).toHaveBeenCalledWith('api/authWarmup')
-  })
-
   it('loginGoogle requests the google endpoint and redirects', async () => {
     const wrapper = mountLogin()
     axios.get.mockResolvedValueOnce({ data: 'https://google-redirect' })

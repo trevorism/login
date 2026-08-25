@@ -31,3 +31,4 @@ jobs:
   call-cypress:
     if: ${{inputs.TEST_TYPE == 'cypress'}}
     uses: trevorism/actions-workflows/.github/workflows/cypress.yml@master
+    secrets: inherit
