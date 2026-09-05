@@ -39,6 +39,22 @@ class SessionCookieFactoryTest {
     }
 
     @Test
+    void testDisplayCookiesOutliveTheSessionOnlyWhenItCanBeRefreshed() {
+        Set<Cookie> refreshable = SessionCookieFactory.sessionCookies("access", "tester", false, "refresh")
+        assert find(refreshable, SessionCookieFactory.USER_NAME_COOKIE).maxAge == SessionCookieFactory.REFRESH_MAX_AGE
+        assert find(refreshable, SessionCookieFactory.ADMIN_COOKIE).maxAge == SessionCookieFactory.REFRESH_MAX_AGE
+    }
+
+    @Test
+    void testDisplayCookiesExpireWithTheSessionWhenThereIsNoRefreshToken() {
+        Set<Cookie> oauth = SessionCookieFactory.sessionCookies("access", "tester", false, null)
+
+        assert find(oauth, SessionCookieFactory.SESSION_COOKIE).maxAge == SessionCookieFactory.ACCESS_MAX_AGE
+        assert find(oauth, SessionCookieFactory.USER_NAME_COOKIE).maxAge == SessionCookieFactory.ACCESS_MAX_AGE
+        assert find(oauth, SessionCookieFactory.ADMIN_COOKIE).maxAge == SessionCookieFactory.ACCESS_MAX_AGE
+    }
+
+    @Test
     void testClearedCookiesExpireEverything() {
         Set<Cookie> cookies = SessionCookieFactory.clearedCookies()
 

@@ -15,10 +15,11 @@ class SessionCookieFactory {
     static final int REFRESH_MAX_AGE = 24 * 60 * 60
 
     static Set<Cookie> sessionCookies(String accessToken, String username, boolean admin, String refreshToken) {
+        int displayMaxAge = refreshToken ? REFRESH_MAX_AGE : ACCESS_MAX_AGE
         Set<Cookie> cookies = new LinkedHashSet<>()
         cookies.add(cookie(SESSION_COOKIE, accessToken, ACCESS_MAX_AGE, true))
-        cookies.add(cookie(USER_NAME_COOKIE, username ?: "", REFRESH_MAX_AGE, false))
-        cookies.add(cookie(ADMIN_COOKIE, Boolean.toString(admin), REFRESH_MAX_AGE, false))
+        cookies.add(cookie(USER_NAME_COOKIE, username ?: "", displayMaxAge, false))
+        cookies.add(cookie(ADMIN_COOKIE, Boolean.toString(admin), displayMaxAge, false))
         if (refreshToken) {
             cookies.add(cookie(REFRESH_COOKIE, refreshToken, REFRESH_MAX_AGE, true))
         }
