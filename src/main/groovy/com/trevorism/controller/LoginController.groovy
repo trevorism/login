@@ -6,6 +6,8 @@ import com.trevorism.model.ForgotPasswordRequest
 import com.trevorism.model.LoginEvent
 import com.trevorism.model.LoginRequest
 import com.trevorism.model.User
+import com.trevorism.service.HandoffService
+import com.trevorism.service.SessionCookieFactory
 import com.trevorism.service.UserSessionService
 import io.micronaut.http.HttpResponse
 import io.micronaut.http.MediaType
@@ -14,7 +16,6 @@ import io.micronaut.http.annotation.Controller
 import io.micronaut.http.annotation.Get
 import io.micronaut.http.annotation.Post
 import io.micronaut.http.cookie.Cookie
-import io.micronaut.http.netty.cookies.NettyCookie
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.inject.Inject
@@ -29,6 +30,9 @@ class LoginController {
 
     @Inject
     private UserSessionService userSessionService
+
+    @Inject
+    private HandoffService handoffService
 
     private AsyncHttpClient asyncHttpClient = new AsyncJsonHttpClient()
 
@@ -56,17 +60,22 @@ class LoginController {
         }
 
         String refreshToken = userSessionService.getRefreshToken(loginRequest, guid)
-
-        int accessMaxAge = 15 * 60
-        int refreshMaxAge = 24 * 60 * 60
-
-        def cookie1 = new NettyCookie("session", token).path("/").maxAge(accessMaxAge).secure(true).domain(".trevorism.com").httpOnly(true)
-        def cookie2 = new NettyCookie("user_name", loginRequest.username).path("/").maxAge(refreshMaxAge).secure(true).domain(".trevorism.com")
-        def cookie3 = new NettyCookie("admin", user.admin.toString()).path("/").maxAge(refreshMaxAge).secure(true).domain(".trevorism.com")
-        def cookie4 = new NettyCookie("refresh_token", refreshToken ?: "").path("/").maxAge(refreshMaxAge).secure(true).domain(".trevorism.com").httpOnly(true)
+        Set<Cookie> cookies = SessionCookieFactory.sessionCookies(token, loginRequest.username, user.admin, refreshToken)
 
         sendLoginEvent(loginRequest, guid, true)
-        return HttpResponse.ok().cookies([cookie1, cookie2, cookie3, cookie4] as Set<Cookie>)
+
+        if (!loginRequest.redirectUri) {
+            return HttpResponse.ok().cookies(cookies)
+        }
+        if (!handoffService.isRedirectAllowed(loginRequest.redirectUri)) {
+            throw new HttpResponseException(400, "This redirect URI is not allowed")
+        }
+        String code = handoffService.mintCode(token, refreshToken, loginRequest.redirectUri)
+        if (!code) {
+            throw new HttpResponseException(400, "Unable to hand off this session")
+        }
+        String location = handoffService.buildLocation(loginRequest.redirectUri, code, loginRequest.state)
+        return HttpResponse.ok([location: location]).cookies(cookies)
     }
 
     @Tag(name = "Login Operations")

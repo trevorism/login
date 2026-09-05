@@ -27,8 +27,8 @@ class MicrosoftAuthorizationCodeFlow implements Oauth2AuthorizationCodeFlow {
     private SecureHttpClient httpClient
 
     @Override
-    String getAuthorizationUrl(String trevorismTenantGuid, String returnUrl) {
-        String state = Oauth2Utils.encodeState(returnUrl, trevorismTenantGuid)
+    String getAuthorizationUrl(String trevorismTenantGuid, String returnUrl, String redirectUri, String appState) {
+        String state = Oauth2Utils.encodeState(returnUrl, trevorismTenantGuid, redirectUri, appState)
         return "${INSTANCE}/${TENANT_ID}/oauth2/v2.0/authorize?client_id=${CLIENT_ID}&response_type=code&redirect_uri=${REDIRECT_URL}&response_mode=query&scope=openid%20profile%20email&state=${state}"
     }
 

@@ -9,24 +9,24 @@ class GoogleAuthorizationCodeFlowTest {
     @Test
     void testGetAuthorizationUrlContainsExpectedParameters() {
         def flow = new GoogleAuthorizationCodeFlow()
-        String url = flow.getAuthorizationUrl("tenant123", "https://example.com")
+        String url = flow.getAuthorizationUrl("tenant123", "https://example.com", null, null)
 
         assert url.startsWith(GoogleAuthorizationCodeFlow.OAUTH2_AUTH_CODE_URL)
         assert url.contains("client_id=${GoogleAuthorizationCodeFlow.CLIENT_ID}")
         assert url.contains("response_type=code")
         assert url.contains("redirect_uri=${GoogleAuthorizationCodeFlow.REDIRECT_URL}")
         assert url.contains("scope=openid%20profile%20email")
-        assert url.contains("example.com")
-        assert url.contains("tenant123")
+        assert Oauth2Utils.decodeState(url.split("state=")[1]).returnUrl == "https://example.com"
+        assert Oauth2Utils.decodeState(url.split("state=")[1]).guid == "tenant123"
     }
 
     @Test
     void testGetAuthorizationUrlWithoutGuid() {
         def flow = new GoogleAuthorizationCodeFlow()
-        String url = flow.getAuthorizationUrl(null, "https://example.com")
+        String url = flow.getAuthorizationUrl(null, "https://example.com", null, null)
 
         assert url.contains("state=")
-        assert url.contains("example.com")
+        assert Oauth2Utils.decodeState(url.split("state=")[1]).returnUrl == "https://example.com"
     }
 
     @Test

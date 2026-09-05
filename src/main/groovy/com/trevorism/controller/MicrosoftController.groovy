@@ -1,7 +1,10 @@
 package com.trevorism.controller
 
 import com.trevorism.model.Oauth2Tokens
+import com.trevorism.model.Oauth2State
+import com.trevorism.service.HandoffService
 import com.trevorism.service.Oauth2AuthorizationCodeFlow
+import com.trevorism.service.RedirectPolicy
 import com.trevorism.service.Oauth2Utils
 import io.micronaut.http.HttpResponse
 import io.micronaut.http.MediaType
@@ -24,19 +27,24 @@ class MicrosoftController {
     @Named("microsoft")
     private Oauth2AuthorizationCodeFlow oauth2AuthorizationCodeFlow
 
+    @Inject
+    private HandoffService handoffService
+
     @Tag(name = "Microsoft Operations")
     @Operation(summary = "Gets a Microsoft login URL")
     @Get(value = "/", produces = MediaType.APPLICATION_JSON)
-    String getMicrosoftLoginUrl( @QueryValue Optional<String> return_url) {
-        return getMicrosoftLoginUrl(null, return_url)
+    String getMicrosoftLoginUrl(@QueryValue Optional<String> return_url, @QueryValue Optional<String> redirect_uri,
+                                @QueryValue Optional<String> state) {
+        return getMicrosoftLoginUrl(null, return_url, redirect_uri, state)
     }
 
     @Tag(name = "Microsoft Operations")
     @Operation(summary = "Gets a Microsoft login URL for a given tenant")
     @Get(value = "/{guid}", produces = MediaType.APPLICATION_JSON)
-    String getMicrosoftLoginUrl(String guid, @QueryValue Optional<String> return_url) {
-        String returnUrl = return_url.orElse("https://trevorism.com")
-        return oauth2AuthorizationCodeFlow.getAuthorizationUrl(guid, returnUrl)
+    String getMicrosoftLoginUrl(String guid, @QueryValue Optional<String> return_url, @QueryValue Optional<String> redirect_uri,
+                              @QueryValue Optional<String> state) {
+        String returnUrl = RedirectPolicy.safeReturnUrl(return_url.orElse(RedirectPolicy.DEFAULT_RETURN_URL))
+        return oauth2AuthorizationCodeFlow.getAuthorizationUrl(guid, returnUrl, redirect_uri.orElse(null), state.orElse(null))
     }
 
     @Tag(name = "Microsoft Operations")
@@ -44,8 +52,8 @@ class MicrosoftController {
     @Get(value = "/callback", produces = MediaType.APPLICATION_JSON)
     HttpResponse receiveAuthorizationCodeCallback(@QueryValue String code, @QueryValue String state) {
         Oauth2Tokens tokens = oauth2AuthorizationCodeFlow.exchangeCodeForProviderToken(code, state)
-        String returnUrl = Oauth2Utils.extractReturnUrlFromState(state)
-        return Oauth2Utils.convertCodeIntoHttpResponse(oauth2AuthorizationCodeFlow, tokens, returnUrl)
+        Oauth2State oauth2State = Oauth2Utils.decodeState(state)
+        return Oauth2Utils.convertCodeIntoHttpResponse(oauth2AuthorizationCodeFlow, tokens, oauth2State, handoffService)
     }
 
 }

@@ -10,9 +10,9 @@ class MicrosoftControllerTest {
     void testGetGoogleLoginUrl() {
         MicrosoftController controller = new MicrosoftController()
         String authUrl = "http://example.com"
-        controller.oauth2AuthorizationCodeFlow = [getAuthorizationUrl: { x,y -> authUrl }] as Oauth2AuthorizationCodeFlow
-        assert authUrl == controller.getMicrosoftLoginUrl(Optional.empty())
-        assert authUrl == controller.getMicrosoftLoginUrl(Optional.of("trevorism.com"))
+        controller.oauth2AuthorizationCodeFlow = [getAuthorizationUrl: { a,b,c,d -> authUrl }] as Oauth2AuthorizationCodeFlow
+        assert authUrl == controller.getMicrosoftLoginUrl(Optional.empty(), Optional.empty(), Optional.empty())
+        assert authUrl == controller.getMicrosoftLoginUrl(Optional.of("https://www.trevorism.com"), Optional.empty(), Optional.empty())
 
     }
 

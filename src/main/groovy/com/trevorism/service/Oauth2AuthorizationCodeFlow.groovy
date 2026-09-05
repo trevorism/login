@@ -4,7 +4,7 @@ import com.trevorism.model.Oauth2Tokens
 
 interface Oauth2AuthorizationCodeFlow {
 
-    String getAuthorizationUrl(String trevorismTenantGuid, String returnUrl)
+    String getAuthorizationUrl(String trevorismTenantGuid, String returnUrl, String redirectUri, String state)
 
     Oauth2Tokens exchangeCodeForProviderToken(String code, String state)
 

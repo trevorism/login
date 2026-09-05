@@ -10,9 +10,9 @@ class GoogleControllerTest {
     void testGetGoogleLoginUrl() {
         GoogleController controller = new GoogleController()
         String authUrl = "http://example.com"
-        controller.oauth2AuthorizationCodeFlow = [getAuthorizationUrl: { x,y -> authUrl }] as Oauth2AuthorizationCodeFlow
-        assert authUrl == controller.getGoogleLoginUrl(Optional.empty())
-        assert authUrl == controller.getGoogleLoginUrl(Optional.of("trevorism.com"))
+        controller.oauth2AuthorizationCodeFlow = [getAuthorizationUrl: { a,b,c,d -> authUrl }] as Oauth2AuthorizationCodeFlow
+        assert authUrl == controller.getGoogleLoginUrl(Optional.empty(), Optional.empty(), Optional.empty())
+        assert authUrl == controller.getGoogleLoginUrl(Optional.of("https://www.trevorism.com"), Optional.empty(), Optional.empty())
 
     }
 

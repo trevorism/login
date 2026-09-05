@@ -85,8 +85,25 @@ import HeaderBar from '@trevorism/ui-header-bar'
 import axios from 'axios'
 import {VaButton} from "vuestic-ui";
 
+const PLATFORM_HOST = /^([a-z0-9-]+\.)*trevorism\.com$/i
+
+function safeReturnUrl(returnUrl) {
+  if (!returnUrl) {
+    return 'https://trevorism.com'
+  }
+  try {
+    const parsed = new URL(returnUrl)
+    if (parsed.protocol === 'https:' && PLATFORM_HOST.test(parsed.hostname)) {
+      return returnUrl
+    }
+  } catch {
+    return 'https://trevorism.com'
+  }
+  return 'https://trevorism.com'
+}
+
 export default {
-  props: ['guid'],
+  props: ['guid', 'redirectUri', 'state'],
   name: 'Login',
   components: {VaButton, HeaderBar },
   data() {
@@ -99,11 +116,7 @@ export default {
   },
   methods: {
     loginGoogle: function() {
-      let returnUrl = this.$route.query.return_url
-      let url = this.guid ? 'api/google/' + this.guid : 'api/google'
-      if(returnUrl) {
-        url += '?return_url=' + encodeURIComponent(returnUrl)
-      }
+      let url = this.oauthUrl('api/google')
       axios.get(url)
           .then(response => {
             window.location.href = response.data
@@ -113,11 +126,7 @@ export default {
           })
     },
     loginMicrosoft: function() {
-      let returnUrl = this.$route.query.return_url
-      let url = this.guid ? 'api/microsoft/' + this.guid : 'api/microsoft'
-      if(returnUrl) {
-        url += '?return_url=' + encodeURIComponent(returnUrl)
-      }
+      let url = this.oauthUrl('api/microsoft')
       axios.get(url)
         .then(response => {
           window.location.href = response.data
@@ -126,19 +135,35 @@ export default {
           this.errorMessage = 'Unable to login with Microsoft'
         })
     },
+    oauthUrl: function (base) {
+      let url = this.guid ? base + '/' + this.guid : base
+      let params = []
+      if (this.redirectUri) {
+        params.push('redirect_uri=' + encodeURIComponent(this.redirectUri))
+        if (this.state) {
+          params.push('state=' + encodeURIComponent(this.state))
+        }
+      } else if (this.$route.query.return_url) {
+        params.push('return_url=' + encodeURIComponent(this.$route.query.return_url))
+      }
+      return params.length ? url + '?' + params.join('&') : url
+    },
     invokeButton: function () {
       let self = this
       let request = {
         username: this.username,
         password: this.password
       }
+      if (this.redirectUri) {
+        request.redirectUri = this.redirectUri
+        request.state = this.state
+      }
       this.disabled = true
       this.errorMessage = ''
       let url = this.guid ? 'api/login/' + this.guid : 'api/login'
       axios.post(url, request)
-        .then(() => {
+        .then((response) => {
           this.disabled = false
-          let returnUrl = self.$route.query.return_url
           // Non-essential side effects must never block the redirect on a
           // successful login, otherwise a thrown error here routes a valid
           // 200 into .catch() and shows "Unable to login".
@@ -147,7 +172,11 @@ export default {
           } catch (e) {
             console.warn('Post-login side effect failed', e)
           }
-          window.location.href = returnUrl || 'https://trevorism.com'
+          if (response && response.data && response.data.location) {
+            window.location.href = response.data.location
+            return
+          }
+          window.location.href = safeReturnUrl(self.$route.query.return_url)
         })
         .catch(() => {
           this.errorMessage = 'Unable to login'

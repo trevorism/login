@@ -1,3 +1,10 @@
+## 2.0.0
+
+Add the authorize and logout routes that complete the one time code handoff, so
+an app can receive a login on its own host. Restrict return_url to Trevorism
+hosts and give the OAuth paths the same HttpOnly session cookie as the password
+path.
+
 ## 1.3.0
 
 Add cypress test and update dependencies.

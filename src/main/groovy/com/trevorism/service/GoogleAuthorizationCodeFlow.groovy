@@ -27,8 +27,8 @@ class GoogleAuthorizationCodeFlow implements Oauth2AuthorizationCodeFlow{
     private SecureHttpClient httpClient
 
     @Override
-    String getAuthorizationUrl(String trevorismTenantGuid, String returnUrl) {
-        String state = Oauth2Utils.encodeState(returnUrl, trevorismTenantGuid)
+    String getAuthorizationUrl(String trevorismTenantGuid, String returnUrl, String redirectUri, String appState) {
+        String state = Oauth2Utils.encodeState(returnUrl, trevorismTenantGuid, redirectUri, appState)
         return "${OAUTH2_AUTH_CODE_URL}?client_id=${CLIENT_ID}&response_type=code&redirect_uri=${REDIRECT_URL}&scope=openid%20profile%20email&access_type=online&state=${state}"
     }
 
