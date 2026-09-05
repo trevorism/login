@@ -36,7 +36,10 @@ class LoginControllerTest {
 
     @Test
     void testLoginInvalid() {
-        assertThrows(HttpResponseException, () -> loginController.login(new LoginRequest(username: null, password: "test123")))
+        def response = loginController.login(new LoginRequest(username: null, password: "test123"))
+
+        assert response.status().code == 401
+        assert response.body().message == "Invalid username or password"
     }
 
     @Test

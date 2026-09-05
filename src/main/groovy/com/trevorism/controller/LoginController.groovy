@@ -50,13 +50,13 @@ class LoginController {
         String token = userSessionService.getToken(loginRequest, guid)
         if (!token) {
             sendLoginEvent(loginRequest, guid, false)
-            throw new HttpResponseException(400, "Invalid username or password")
+            return HttpResponse.unauthorized().body([message: "Invalid username or password"])
         }
 
         User user = userSessionService.getUserFromToken(token)
         if (User.isNullUser(user)) {
             sendLoginEvent(loginRequest, guid, false)
-            throw new HttpResponseException(400, "Unable to find user")
+            return HttpResponse.unauthorized().body([message: "Unable to find user"])
         }
 
         String refreshToken = userSessionService.getRefreshToken(loginRequest, guid)
