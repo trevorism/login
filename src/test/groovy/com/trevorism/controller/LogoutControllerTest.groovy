@@ -32,6 +32,12 @@ class LogoutControllerTest {
     }
 
     @Test
+    void testAnOriginCarryingUserInfoIsRefused() {
+        assert location(controller.logout("https://user@app.memowand.com")) == RedirectPolicy.DEFAULT_RETURN_URL
+        assert location(controller.logout("https://app.memowand.com@evil.example.org")) == RedirectPolicy.DEFAULT_RETURN_URL
+    }
+
+    @Test
     void testUnknownOriginFallsBackToTheHomePage() {
         assert location(controller.logout("https://evil.example.org")) == RedirectPolicy.DEFAULT_RETURN_URL
     }

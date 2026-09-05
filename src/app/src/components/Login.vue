@@ -93,6 +93,9 @@ function safeReturnUrl(returnUrl) {
   }
   try {
     const parsed = new URL(returnUrl)
+    if (parsed.username || parsed.password) {
+      return 'https://trevorism.com'
+    }
     if (parsed.protocol === 'https:' && PLATFORM_HOST.test(parsed.hostname)) {
       return returnUrl
     }

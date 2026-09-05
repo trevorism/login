@@ -35,6 +35,7 @@ class RedirectPolicyTest {
         assert RedirectPolicy.callbackUriForOrigin("https://app.memowand.com") == "https://app.memowand.com/api/auth/callback"
         assert RedirectPolicy.callbackUriForOrigin("http://localhost:5173") == "http://localhost:5173/api/auth/callback"
         assert RedirectPolicy.callbackUriForOrigin("https://app.memowand.com/anything") == "https://app.memowand.com/api/auth/callback"
+        assert RedirectPolicy.callbackUriForOrigin("https://user@app.memowand.com") == null
         assert RedirectPolicy.callbackUriForOrigin("garbage") == null
         assert RedirectPolicy.callbackUriForOrigin(null) == null
     }

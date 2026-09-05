@@ -100,6 +100,30 @@ describe('Authorize', () => {
     expect(assign).not.toHaveBeenCalled()
   })
 
+  it('falls back to the login form when the session check fails unexpectedly', async () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+    axios.post.mockRejectedValue({ response: { status: 500 } })
+
+    const wrapper = mountAuthorize({ redirect_uri: CALLBACK, state: 'abc' })
+    await flushPromises()
+
+    expect(wrapper.findComponent({ name: 'Login' }).exists()).toBe(true)
+    expect(assign).not.toHaveBeenCalled()
+    expect(warn).toHaveBeenCalled()
+    warn.mockRestore()
+  })
+
+  it('does not warn for the expected unauthenticated response', async () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+    axios.post.mockRejectedValue({ response: { status: 401 } })
+
+    mountAuthorize({ redirect_uri: CALLBACK, state: 'abc' })
+    await flushPromises()
+
+    expect(warn).not.toHaveBeenCalled()
+    warn.mockRestore()
+  })
+
   it('does not call the backend without a redirect uri', async () => {
     const wrapper = mountAuthorize({})
     await flushPromises()

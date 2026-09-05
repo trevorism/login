@@ -73,7 +73,7 @@ class Oauth2Utils {
     }
 
     static Oauth2State decodeState(String state) {
-        String decodedState = URLDecoder.decode(state ?: "", "UTF-8")
+        String decodedState = urlDecode(state)
         try {
             String json = new String(Base64.urlDecoder.decode(decodedState), "UTF-8")
             Oauth2State parsed = gson.fromJson(json, Oauth2State)
@@ -98,6 +98,14 @@ class Oauth2Utils {
                 state: appState)
         String encoded = Base64.urlEncoder.withoutPadding().encodeToString(gson.toJson(oauth2State).getBytes("UTF-8"))
         return URLEncoder.encode(encoded, "UTF-8")
+    }
+
+    private static String urlDecode(String value) {
+        try {
+            return URLDecoder.decode(value ?: "", "UTF-8")
+        } catch (IllegalArgumentException ignored) {
+            return value ?: ""
+        }
     }
 
     private static Oauth2State legacyState(String decodedState) {

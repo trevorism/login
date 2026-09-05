@@ -41,4 +41,12 @@ class Oauth2UtilsTest {
         assert Oauth2Utils.extractReturnUrlFromState("") == "https://trevorism.com"
         assert !Oauth2Utils.extractTenantIdFromState("nonsense")
     }
+
+    @Test
+    void testMalformedPercentEncodingDoesNotThrow() {
+        assert Oauth2Utils.decodeState("%ZZ")
+        assert Oauth2Utils.extractReturnUrlFromState("%ZZ") == "https://trevorism.com"
+        assert Oauth2Utils.extractReturnUrlFromState("%") == "https://trevorism.com"
+        assert !Oauth2Utils.extractTenantIdFromState("abc%2")
+    }
 }

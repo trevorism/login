@@ -50,8 +50,11 @@ export default {
       })
       .catch((error) => {
         this.checking = false
-        if (error.response && error.response.status === 400) {
+        const status = error.response && error.response.status
+        if (status === 400) {
           this.errorMessage = 'This application is not allowed to sign you in'
+        } else if (status !== 401) {
+          console.warn('Unable to check the existing session, falling back to the login form', error)
         }
       })
   }

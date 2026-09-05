@@ -24,7 +24,7 @@ class RedirectPolicy {
 
     static String callbackUriForOrigin(String origin) {
         URI uri = parse(origin)
-        if (!uri?.host || !uri.scheme) {
+        if (!uri?.host || !uri.scheme || uri.rawUserInfo != null) {
             return null
         }
         int port = uri.port

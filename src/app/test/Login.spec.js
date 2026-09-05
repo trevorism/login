@@ -134,6 +134,28 @@ describe('Login.vue', () => {
     expect(window.location.href).toBe('https://certs.project.trevorism.com/report')
   })
 
+  it('invokeButton refuses a return_url carrying userinfo', async () => {
+    const wrapper = mountLogin({ query: { return_url: 'https://user@www.trevorism.com' } })
+    await wrapper.setData({ username: 'alice', password: 'secret1' })
+    axios.post.mockResolvedValueOnce({})
+
+    await wrapper.vm.invokeButton()
+    await flush()
+
+    expect(window.location.href).toBe('https://trevorism.com')
+  })
+
+  it('invokeButton refuses a host that only looks like a platform host', async () => {
+    const wrapper = mountLogin({ query: { return_url: 'https://www.trevorism.com@evil.example.org' } })
+    await wrapper.setData({ username: 'alice', password: 'secret1' })
+    axios.post.mockResolvedValueOnce({})
+
+    await wrapper.vm.invokeButton()
+    await flush()
+
+    expect(window.location.href).toBe('https://trevorism.com')
+  })
+
   it('invokeButton refuses a return_url that is not a platform host', async () => {
     const wrapper = mountLogin({ query: { return_url: 'https://evil.example.org' } })
     await wrapper.setData({ username: 'alice', password: 'secret1' })
