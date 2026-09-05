@@ -68,11 +68,11 @@ class LoginController {
             return HttpResponse.ok().cookies(cookies)
         }
         if (!handoffService.isRedirectAllowed(loginRequest.redirectUri)) {
-            throw new HttpResponseException(400, "This redirect URI is not allowed")
+            return HttpResponse.badRequest([message: "This redirect URI is not allowed"]).cookies(cookies)
         }
         String code = handoffService.mintCode(token, refreshToken, loginRequest.redirectUri)
         if (!code) {
-            throw new HttpResponseException(400, "Unable to hand off this session")
+            return HttpResponse.badRequest([message: "Unable to hand off this session"]).cookies(cookies)
         }
         String location = handoffService.buildLocation(loginRequest.redirectUri, code, loginRequest.state)
         return HttpResponse.ok([location: location]).cookies(cookies)

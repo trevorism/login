@@ -5,11 +5,8 @@ import com.trevorism.model.User
 import com.trevorism.service.HandoffService
 import com.trevorism.service.SessionCookieFactory
 import com.trevorism.service.UserSessionService
-import org.apache.hc.client5.http.HttpResponseException
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-
-import static org.junit.jupiter.api.Assertions.assertThrows
 
 class AuthorizeControllerTest {
 
@@ -35,14 +32,16 @@ class AuthorizeControllerTest {
 
     @Test
     void testDisallowedRedirectUriIsRejectedBeforeAnythingElse() {
-        assertThrows(HttpResponseException, () -> controller.authorize(
-                new AuthorizeRequest(redirectUri: "https://evil.example.org/api/auth/callback"), "good.access", null))
+        def response = controller.authorize(
+                new AuthorizeRequest(redirectUri: "https://evil.example.org/api/auth/callback"), "good.access", null)
+
+        assert response.status().code == 400
         assert !mintedWith
     }
 
     @Test
     void testMissingRedirectUriIsRejected() {
-        assertThrows(HttpResponseException, () -> controller.authorize(new AuthorizeRequest(), "good.access", null))
+        assert controller.authorize(new AuthorizeRequest(), "good.access", null).status().code == 400
     }
 
     @Test
@@ -93,7 +92,6 @@ class AuthorizeControllerTest {
                 mintCode         : { String access, String refresh, String uri -> null }
         ] as HandoffService
 
-        assertThrows(HttpResponseException, () -> controller.authorize(
-                new AuthorizeRequest(redirectUri: REDIRECT_URI), "good.access", null))
+        assert controller.authorize(new AuthorizeRequest(redirectUri: REDIRECT_URI), "good.access", null).status().code == 400
     }
 }

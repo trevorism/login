@@ -15,7 +15,6 @@ import io.micronaut.http.annotation.Post
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.inject.Inject
-import org.apache.hc.client5.http.HttpResponseException
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -38,7 +37,7 @@ class AuthorizeController {
                            @CookieValue("refresh_token") @Nullable String refreshToken) {
         String redirectUri = authorizeRequest?.redirectUri
         if (!handoffService.isRedirectAllowed(redirectUri)) {
-            throw new HttpResponseException(400, "This redirect URI is not allowed")
+            return HttpResponse.badRequest([message: "This redirect URI is not allowed"])
         }
 
         String accessToken = resolveAccessToken(sessionToken, refreshToken)
@@ -53,7 +52,7 @@ class AuthorizeController {
 
         String code = handoffService.mintCode(accessToken, refreshToken, redirectUri)
         if (!code) {
-            throw new HttpResponseException(400, "Unable to hand off this session")
+            return HttpResponse.badRequest([message: "Unable to hand off this session"])
         }
 
         log.info("Handing off ${user.username} to ${redirectUri}")
