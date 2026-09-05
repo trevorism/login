@@ -67,6 +67,28 @@ describe('Authorize', () => {
     expect(assign).not.toHaveBeenCalled()
   })
 
+  it('renders the login form unwrapped so the header bar can span the page', async () => {
+    axios.post.mockRejectedValue({ response: { status: 401 } })
+
+    const wrapper = mountAuthorize({ redirect_uri: CALLBACK, state: 'abc' })
+    await flushPromises()
+
+    expect(wrapper.find('.authorize-status').exists()).toBe(false)
+    expect(wrapper.element).toBe(wrapper.findComponent({ name: 'Login' }).element)
+  })
+
+  it('passes the handoff details down to the login form', async () => {
+    axios.post.mockRejectedValue({ response: { status: 401 } })
+
+    const wrapper = mountAuthorize({ redirect_uri: CALLBACK, state: 'abc', tenant: 'guid-1' })
+    await flushPromises()
+
+    const login = wrapper.findComponent({ name: 'Login' })
+    expect(login.props('redirectUri')).toBe(CALLBACK)
+    expect(login.props('state')).toBe('abc')
+    expect(login.props('guid')).toBe('guid-1')
+  })
+
   it('refuses a redirect uri the platform does not allow', async () => {
     axios.post.mockRejectedValue({ response: { status: 400 } })
 
