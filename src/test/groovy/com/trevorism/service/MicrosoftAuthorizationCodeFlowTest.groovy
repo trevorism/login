@@ -9,15 +9,15 @@ class MicrosoftAuthorizationCodeFlowTest {
     @Test
     void testGetAuthorizationUrlContainsExpectedParameters() {
         def flow = new MicrosoftAuthorizationCodeFlow()
-        String url = flow.getAuthorizationUrl("tenant123", "https://example.com")
+        String url = flow.getAuthorizationUrl("tenant123", "https://example.com", null, null)
 
         assert url.startsWith("${MicrosoftAuthorizationCodeFlow.INSTANCE}/${MicrosoftAuthorizationCodeFlow.TENANT_ID}/oauth2/v2.0/authorize")
         assert url.contains("client_id=${MicrosoftAuthorizationCodeFlow.CLIENT_ID}")
         assert url.contains("response_type=code")
         assert url.contains("redirect_uri=${MicrosoftAuthorizationCodeFlow.REDIRECT_URL}")
         assert url.contains("response_mode=query")
-        assert url.contains("example.com")
-        assert url.contains("tenant123")
+        assert Oauth2Utils.decodeState(url.split("state=")[1]).returnUrl == "https://example.com"
+        assert Oauth2Utils.decodeState(url.split("state=")[1]).guid == "tenant123"
     }
 
     @Test

@@ -4,4 +4,6 @@ class LoginRequest {
     String username
     String password
     String type = "user"
+    String redirectUri
+    String state
 }

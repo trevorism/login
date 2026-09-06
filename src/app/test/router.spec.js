@@ -24,4 +24,17 @@ describe('router', () => {
     expect(resolved.name).toBe('Login')
     expect(resolved.params.guid).toBe('abc123')
   })
+
+  it('resolves /authorize to the Authorize route rather than treating it as a guid', () => {
+    const resolved = router.resolve('/authorize')
+    expect(resolved.name).toBe('Authorize')
+    expect(resolved.params.guid).toBeUndefined()
+  })
+
+  it('keeps the query intact on the Authorize route', () => {
+    const resolved = router.resolve('/authorize?redirect_uri=https%3A%2F%2Fa.trevorism.com%2Fapi%2Fauth%2Fcallback&state=abc')
+    expect(resolved.name).toBe('Authorize')
+    expect(resolved.query.redirect_uri).toBe('https://a.trevorism.com/api/auth/callback')
+    expect(resolved.query.state).toBe('abc')
+  })
 })
