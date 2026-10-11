@@ -60,24 +60,6 @@ class DefaultUserSessionService implements UserSessionService {
     }
 
     @Override
-    String redeemRefreshToken(String refreshToken) {
-        if (!refreshToken) {
-            return null
-        }
-        try {
-            String json = gson.toJson([refreshToken: refreshToken])
-            String result = singletonClient.post("https://auth.trevorism.com/token/refresh/redeem", json)
-            if (result.startsWith("<html>")) {
-                throw new RuntimeException("Bad Request to redeem refresh token")
-            }
-            return result
-        } catch (Exception e) {
-            log.debug("Unable to redeem refresh token", e)
-        }
-        return null
-    }
-
-    @Override
     User getUserFromToken(String token) {
         try {
             ClaimProperties claimProperties = ClaimsProvider.getClaims(token, propertiesProvider.getProperty("signingKey"))

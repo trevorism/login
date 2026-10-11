@@ -39,25 +39,6 @@ class DefaultUserSessionServiceTest {
     }
 
     @Test
-    void testRedeemRefreshTokenNullGuardDoesNotCallNetwork() {
-        def service = buildService([post: { String u, String b -> throw new IllegalStateException("network call!") }] as HttpClient)
-        assert service.redeemRefreshToken(null) == null
-        assert service.redeemRefreshToken("") == null
-    }
-
-    @Test
-    void testRedeemRefreshTokenSuccess() {
-        def service = buildService([post: { String u, String b -> "new-access-token" }] as HttpClient)
-        assert service.redeemRefreshToken("some-refresh") == "new-access-token"
-    }
-
-    @Test
-    void testRedeemRefreshTokenReturnsNullOnHtmlResponse() {
-        def service = buildService([post: { String u, String b -> "<html>bad" }] as HttpClient)
-        assert service.redeemRefreshToken("some-refresh") == null
-    }
-
-    @Test
     void testGetUserFromTokenReturnsNullUserOnInvalidToken() {
         def props = [getProperty: { String key -> "fake-signing-key" }] as PropertiesProvider
         def service = buildService([post: { String u, String b -> "" }] as HttpClient, props)
