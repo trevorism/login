@@ -1,3 +1,7 @@
+## 2.1.0
+
+Finish migration of login to use the ui-auth lib.
+
 ## 2.0.0
 
 Add the authorize and logout routes that complete the one time code handoff, so

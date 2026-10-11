@@ -5,6 +5,8 @@ import com.trevorism.model.User
 import com.trevorism.service.HandoffService
 import com.trevorism.service.SessionCookieFactory
 import com.trevorism.service.UserSessionService
+import com.trevorism.ui.AuthProviderClient
+import com.trevorism.ui.UiAuthConfiguration
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
@@ -20,9 +22,14 @@ class AuthorizeControllerTest {
         mintedWith = []
         controller = new AuthorizeController()
         controller.userSessionService = [
-                getUserFromToken  : { String token -> token == "good.access" ? new User(username: "tester", admin: true) : User.NULL_USER },
-                redeemRefreshToken: { String token -> token == "good.refresh" ? "good.access" : null }
+                getUserFromToken: { String token -> token == "good.access" ? new User(username: "tester", admin: true) : User.NULL_USER }
         ] as UserSessionService
+        controller.authProviderClient = new AuthProviderClient(new UiAuthConfiguration()) {
+            @Override
+            String redeemRefreshToken(String token) {
+                token == "good.refresh" ? "good.access" : null
+            }
+        }
         controller.handoffService = [
                 isRedirectAllowed: { String uri -> uri == REDIRECT_URI },
                 mintCode         : { String access, String refresh, String uri -> mintedWith = [access, refresh, uri]; "1000.secret" },

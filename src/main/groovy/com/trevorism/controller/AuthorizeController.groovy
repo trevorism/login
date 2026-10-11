@@ -5,6 +5,7 @@ import com.trevorism.model.User
 import com.trevorism.service.HandoffService
 import com.trevorism.service.SessionCookieFactory
 import com.trevorism.service.UserSessionService
+import com.trevorism.ui.AuthProviderClient
 import io.micronaut.core.annotation.Nullable
 import io.micronaut.http.HttpResponse
 import io.micronaut.http.MediaType
@@ -28,6 +29,9 @@ class AuthorizeController {
 
     @Inject
     private HandoffService handoffService
+
+    @Inject
+    private AuthProviderClient authProviderClient
 
     @Tag(name = "Authorize Operations")
     @Operation(summary = "Hands an existing single sign on session to an allowed redirect URI")
@@ -64,6 +68,6 @@ class AuthorizeController {
         if (sessionToken && !User.isNullUser(userSessionService.getUserFromToken(sessionToken))) {
             return sessionToken
         }
-        return refreshToken ? userSessionService.redeemRefreshToken(refreshToken) : null
+        return refreshToken ? authProviderClient.redeemRefreshToken(refreshToken) : null
     }
 }
