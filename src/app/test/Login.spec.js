@@ -203,6 +203,64 @@ describe('Login.vue', () => {
     expect(requested).not.toContain('return_url')
   })
 
+  describe('when ui-auth redirects with next', () => {
+    beforeEach(() => {
+      window.location = { href: '', origin: 'https://login.trevorism.com' }
+    })
+
+    it('invokeButton returns to the relative next route on the login origin', async () => {
+      const wrapper = mountLogin({ query: { next: '/authorize?redirect_uri=https%3A%2F%2Fcerts.project.trevorism.com&state=abc' } })
+      await wrapper.setData({ username: 'alice', password: 'secret1' })
+      axios.post.mockResolvedValueOnce({})
+
+      await wrapper.vm.invokeButton()
+      await flush()
+
+      expect(window.location.href).toBe(
+        'https://login.trevorism.com/authorize?redirect_uri=https%3A%2F%2Fcerts.project.trevorism.com&state=abc'
+      )
+    })
+
+    it('loginGoogle forwards next as an absolute return_url', async () => {
+      const wrapper = mountLogin({ query: { next: '/forgot' } })
+      axios.get.mockResolvedValueOnce({ data: 'https://accounts.google.com/o/oauth2' })
+
+      await wrapper.vm.loginGoogle()
+      await flush()
+
+      expect(axios.get).toHaveBeenLastCalledWith(
+        'api/google?return_url=' + encodeURIComponent('https://login.trevorism.com/forgot')
+      )
+    })
+
+    it('invokeButton prefers return_url over next', async () => {
+      const wrapper = mountLogin({ query: { return_url: 'https://certs.project.trevorism.com/report', next: '/forgot' } })
+      await wrapper.setData({ username: 'alice', password: 'secret1' })
+      axios.post.mockResolvedValueOnce({})
+
+      await wrapper.vm.invokeButton()
+      await flush()
+
+      expect(window.location.href).toBe('https://certs.project.trevorism.com/report')
+    })
+
+    it.each([
+      ['an absolute url', 'https://evil.example.org/x'],
+      ['a protocol-relative url', '//evil.example.org/x'],
+      ['a backslash-prefixed url', '/\\evil.example.org/x'],
+      ['a path without a leading slash', 'evil.example.org/x']
+    ])('invokeButton ignores next that is %s', async (_label, next) => {
+      const wrapper = mountLogin({ query: { next } })
+      await wrapper.setData({ username: 'alice', password: 'secret1' })
+      axios.post.mockResolvedValueOnce({})
+
+      await wrapper.vm.invokeButton()
+      await flush()
+
+      expect(window.location.href).toBe('https://trevorism.com')
+    })
+  })
+
   it('invokeButton shows an error and re-enables the form on failure', async () => {
     const wrapper = mountLogin()
     await wrapper.setData({ username: 'alice', password: 'secret1' })

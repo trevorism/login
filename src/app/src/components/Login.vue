@@ -105,6 +105,19 @@ function safeReturnUrl(returnUrl) {
   return 'https://trevorism.com'
 }
 
+function sameOriginUrlFromNext(next) {
+  if (typeof next !== 'string' || !next.startsWith('/') || next.startsWith('//') || next.startsWith('/\\')) {
+    return null
+  }
+  try {
+    const origin = window.location.origin
+    const resolved = new URL(next, origin)
+    return resolved.origin === origin ? resolved.href : null
+  } catch {
+    return null
+  }
+}
+
 export default {
   props: ['guid', 'redirectUri', 'state'],
   name: 'Login',
@@ -115,6 +128,11 @@ export default {
       password: '',
       errorMessage: '',
       disabled: false
+    }
+  },
+  computed: {
+    returnUrl() {
+      return this.$route.query.return_url || sameOriginUrlFromNext(this.$route.query.next)
     }
   },
   methods: {
@@ -146,8 +164,8 @@ export default {
         if (this.state) {
           params.push('state=' + encodeURIComponent(this.state))
         }
-      } else if (this.$route.query.return_url) {
-        params.push('return_url=' + encodeURIComponent(this.$route.query.return_url))
+      } else if (this.returnUrl) {
+        params.push('return_url=' + encodeURIComponent(this.returnUrl))
       }
       return params.length ? url + '?' + params.join('&') : url
     },
@@ -179,7 +197,7 @@ export default {
             window.location.href = response.data.location
             return
           }
-          window.location.href = safeReturnUrl(self.$route.query.return_url)
+          window.location.href = safeReturnUrl(self.returnUrl)
         })
         .catch(() => {
           this.errorMessage = 'Unable to login'
